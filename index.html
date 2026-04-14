@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EGK Nuclear AI — From Decades to Deployment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:    #03060F;
+  --deep:   #060D1F;
+  --navy:   #080F24;
+  --blue:   #0B2FA8;
+  --sky:    #0E5BCC;
+  --cyan:   #00C8FF;
+  --teal:   #00E5B0;
+  --green:  #00FF88;
+  --yellow: #FFD600;
+  --orange: #FF8800;
+  --red:    #FF3030;
+  --white:  #FFFFFF;
+  --silver: #8BACC8;
+  --dim:    #3A5068;
+  --card:   rgba(255,255,255,0.04);
+  --border: rgba(0,200,255,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--ink);color:var(--silver);overflow-x:hidden;}
+
+/* ── GRID OVERLAY ── */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,200,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  background:rgba(3,6,15,.97);backdrop-filter:blur(16px);
+  padding:12px 36px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-brand img{height:34px;border-radius:7px;}
+.nav-brand-text{font-family:'Orbitron',monospace;color:var(--cyan);font-size:.82rem;font-weight:700;letter-spacing:1px;}
+.nav-links{display:flex;gap:4px;list-style:none;align-items:center;}
+.nav-links a{color:var(--silver);text-decoration:none;font-size:.79rem;font-weight:600;padding:5px 12px;border-radius:7px;transition:all .2s;}
+.nav-links a:hover{background:rgba(0,200,255,.1);color:var(--cyan);}
+.nav-cta{background:linear-gradient(135deg,var(--sky),var(--blue)) !important;color:white !important;font-weight:700 !important;}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;
+  background:radial-gradient(ellipse 90% 70% at 50% 30%,rgba(11,47,168,.18) 0%,transparent 65%),
+             linear-gradient(180deg,#03060F 0%,#060D1F 100%);
+  display:flex;align-items:center;padding:110px 36px 80px;
+  position:relative;overflow:hidden;z-index:1;
+}
+.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(0,200,255,.3);background:rgba(0,200,255,.06);
+  color:var(--cyan);font-size:.7rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  padding:4px 16px;border-radius:50px;margin-bottom:18px;
+}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+@keyframes fadeup{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-title{
+  font-family:'Orbitron',monospace;font-weight:900;
+  font-size:clamp(1.6rem,4vw,3.4rem);
+  color:var(--white);line-height:1.1;margin-bottom:10px;
+  animation:fadeup .7s ease both;
+}
+.hero-title .cyan{color:var(--cyan);}
+.hero-title .green{color:var(--green);}
+
+.hero-sub{font-size:1.05rem;color:var(--silver);margin-bottom:24px;line-height:1.75;animation:fadeup .7s .1s ease both;}
+.hero-desc{font-size:.9rem;color:var(--dim);line-height:1.8;margin-bottom:28px;animation:fadeup .7s .2s ease both;}
+
+.hero-btns{display:flex;flex-wrap:wrap;gap:10px;animation:fadeup .7s .3s ease both;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 24px;border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .22s;}
+.btn-cyan{background:linear-gradient(135deg,var(--cyan),var(--teal));color:#03060F;box-shadow:0 6px 24px rgba(0,200,255,.35);}
+.btn-cyan:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,200,255,.5);}
+.btn-green{background:linear-gradient(135deg,var(--green),var(--teal));color:#031A0F;box-shadow:0 6px 24px rgba(0,255,136,.3);}
+.btn-green:hover{transform:translateY(-2px);}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--silver);border:1.5px solid rgba(255,255,255,.15);}
+.btn-ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-2px);}
+
+.hero-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px;animation:fadeup .7s .4s ease both;}
+.htag{background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);color:#4A7A9B;font-size:.7rem;font-weight:600;padding:3px 11px;border-radius:50px;}
+
+/* ── SMR ANIMATION ── */
+#smr-canvas-wrap{
+  position:relative;
+  background:rgba(0,200,255,.04);
+  border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+  padding:20px;
+}
+#smr-canvas{width:100%;max-width:500px;display:block;margin:0 auto;}
+.smr-label{
+  font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;
+  color:var(--cyan);text-align:center;margin-top:8px;letter-spacing:1px;text-transform:uppercase;
+}
+
+/* ── STATS STRIP ── */
+.stats-strip{
+  position:relative;z-index:2;
+  background:rgba(0,200,255,.05);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:16px 24px;
+}
+.stats-inner{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:0;justify-content:center;}
+.sstat{text-align:center;flex:1;min-width:130px;padding:6px 18px;border-right:1px solid var(--border);}
+.sstat:last-child{border-right:none;}
+.sstat-n{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--cyan);display:block;}
+.sstat-l{font-size:.68rem;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.8px;}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1;padding:80px 24px;}
+.container{max-width:1100px;margin:0 auto;}
+.sec-label{display:inline-flex;align-items:center;gap:7px;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;}
+.sec-label::before{content:'';width:16px;height:1.5px;background:var(--cyan);display:inline-block;}
+.sec-title{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,3vw,2.4rem);font-weight:800;color:var(--white);line-height:1.18;margin-bottom:12px;}
+.sec-title span{color:var(--cyan);}
+.sec-title .green{color:var(--green);}
+.sec-desc{font-size:.93rem;color:var(--silver);line-height:1.8;max-width:640px;}
+.text-center{text-align:center;margin:0 auto;}
+
+/* ── TIMELINE / COMPARISON ── */
+#timeline{background:var(--deep);}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:44px;}
+.compare-card{border-radius:16px;padding:28px 24px;position:relative;overflow:hidden;}
+.old-way{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
+.new-way{background:rgba(0,200,255,.05);border:2px solid rgba(0,200,255,.3);box-shadow:0 0 40px rgba(0,200,255,.08);}
+.ccard-badge{display:inline-block;font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:50px;margin-bottom:14px;}
+.badge-old{background:rgba(255,255,255,.1);color:#94A3B8;}
+.badge-new{background:var(--cyan);color:#03060F;}
+.ccard-title{font-weight:700;font-size:.92rem;color:var(--silver);margin-bottom:18px;}
+
+.timeline-steps{display:flex;gap:0;margin-bottom:20px;}
+.ts{flex:1;text-align:center;padding:12px 6px;border-right:1px solid rgba(255,255,255,.08);}
+.ts:last-child{border-right:none;}
+.ts-label{font-size:.6rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.ts-val{font-family:'Orbitron',monospace;font-size:1rem;font-weight:800;}
+.ts-old{color:#94A3B8;}
+.ts-new{color:var(--cyan);}
+.ts-new.green{color:var(--green);}
+.ts-new.big{font-size:1.4rem;color:var(--green);}
+
+.progress-bar-wrap{height:6px;background:rgba(255,255,255,.08);border-radius:50px;margin:14px 0;}
+.progress-fill{height:100%;border-radius:50px;transition:width 1.5s ease;}
+.pb-old{background:rgba(148,163,184,.4);width:100%;}
+.pb-new{background:linear-gradient(90deg,var(--cyan),var(--green));width:65%;}
+
+.ccard-total{font-family:'Orbitron',monospace;font-size:1rem;font-weight:800;text-align:center;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+.total-old{color:#94A3B8;}
+.total-new{color:var(--green);}
+.saving{font-size:.72rem;font-weight:700;color:var(--green);background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.25);padding:2px 10px;border-radius:50px;margin-top:6px;display:inline-block;}
+
+/* ── 4 PILLARS ── */
+#pillars{background:var(--navy);}
+.pillars-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px;}
+.pillar{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 18px;text-align:center;transition:all .3s;position:relative;overflow:hidden;}
+.pillar::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;background:radial-gradient(ellipse at top,rgba(0,200,255,.1) 0%,transparent 70%);}
+.pillar:hover{transform:translateY(-6px);border-color:rgba(0,200,255,.4);}
+.pillar:hover::before{opacity:1;}
+.pillar-icon{font-size:2.4rem;margin-bottom:12px;}
+.pillar-title{font-family:'Orbitron',monospace;font-size:.78rem;font-weight:800;color:var(--white);margin-bottom:8px;line-height:1.3;}
+.pillar-body{font-size:.78rem;color:var(--silver);line-height:1.6;}
+.pillar-accent{color:var(--cyan);font-weight:700;font-size:.75rem;margin-top:8px;display:block;}
+
+/* ── AI SHIFT ── */
+#ai-shift{background:linear-gradient(180deg,var(--navy),var(--deep));}
+.shift-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:44px;}
+.arrows-list{display:flex;flex-direction:column;gap:10px;margin:20px 0;}
+.arrow-item{display:flex;align-items:center;gap:12px;background:rgba(0,200,255,.06);border:1px solid var(--border);border-radius:10px;padding:12px 16px;}
+.arrow-sym{font-family:'Orbitron',monospace;font-size:1rem;color:var(--cyan);font-weight:800;flex-shrink:0;}
+.arrow-text{font-size:.88rem;color:var(--white);font-weight:600;}
+
+.industry-used{margin-top:20px;}
+.iu-label{font-size:.7rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.iu-item{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;margin-bottom:8px;}
+.iu-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;animation:blink 2s infinite;}
+.iu-name{font-size:.85rem;color:var(--silver);font-weight:600;}
+
+.shift-visual{position:relative;text-align:center;}
+.sv-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid;pointer-events:none;}
+.svr1{width:200px;height:200px;border-color:rgba(0,200,255,.15);animation:spinSlow 20s linear infinite;}
+.svr2{width:300px;height:300px;border-color:rgba(0,229,176,.1);animation:spinSlow 30s linear infinite reverse;}
+.svr3{width:400px;height:400px;border-color:rgba(0,200,255,.06);animation:spinSlow 40s linear infinite;}
+@keyframes spinSlow{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.sv-core{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:800;color:var(--white);position:relative;z-index:2;padding:40px 0;}
+.sv-core span{color:var(--cyan);}
+
+/* ── MALAYSIA ── */
+#malaysia{background:var(--deep);}
+.malaysia-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:44px;}
+.my-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 16px;text-align:center;transition:all .28s;}
+.my-card:hover{transform:translateY(-5px);border-color:rgba(0,255,136,.3);}
+.my-icon{font-size:2.2rem;margin-bottom:10px;}
+.my-title{font-family:'Orbitron',monospace;font-size:.72rem;font-weight:800;color:var(--white);margin-bottom:6px;line-height:1.3;text-transform:uppercase;}
+.my-body{font-size:.78rem;color:var(--silver);line-height:1.6;}
+.my-accent{color:var(--cyan);font-size:.72rem;font-weight:700;margin-top:6px;display:block;}
+
+/* ── EGK PERSPECTIVE ── */
+#egk{background:var(--navy);}
+.egk-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center;margin-top:44px;}
+.egk-text blockquote{
+  border-left:3px solid var(--cyan);padding:16px 20px;
+  background:rgba(0,200,255,.05);border-radius:0 10px 10px 0;
+  font-style:italic;font-size:.97rem;color:#CBD5E1;line-height:1.8;margin-bottom:20px;
+}
+.egk-text p{font-size:.88rem;color:var(--silver);line-height:1.8;margin-bottom:14px;}
+.github-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;
+  padding:16px 18px;margin-top:16px;display:flex;align-items:center;gap:14px;
+}
+.gh-icon{font-size:1.8rem;flex-shrink:0;}
+.gh-text strong{display:block;font-size:.9rem;color:var(--white);}
+.gh-text a{font-size:.78rem;color:var(--cyan);text-decoration:none;}
+.gh-text a:hover{text-decoration:underline;}
+
+.model-list{display:flex;flex-direction:column;gap:10px;}
+.ml-item{background:rgba(0,200,255,.05);border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;}
+.ml-num{font-family:'Orbitron',monospace;font-size:.78rem;font-weight:800;color:var(--cyan);flex-shrink:0;margin-top:1px;}
+.ml-text{font-size:.83rem;color:var(--silver);line-height:1.5;}
+.ml-text strong{color:var(--white);}
+
+/* ── PLAYBOOK ── */
+#playbook{background:linear-gradient(180deg,var(--deep),var(--ink));}
+.play-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px;}
+.ps{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 16px;position:relative;overflow:hidden;}
+.ps::after{content:attr(data-n);position:absolute;bottom:-10px;right:10px;font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;color:rgba(0,200,255,.06);line-height:1;}
+.ps-n{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--cyan);display:block;margin-bottom:8px;}
+.ps-title{font-weight:800;font-size:.88rem;color:var(--white);margin-bottom:6px;}
+.ps-body{font-size:.78rem;color:var(--silver);line-height:1.55;}
+
+/* ── CTA ── */
+#cta{
+  background:linear-gradient(160deg,#060D1F,#0B2FA8 50%,#060D1F);
+  text-align:center;padding:80px 24px;position:relative;overflow:hidden;
+}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(0,200,255,.12) 0%,transparent 70%);}
+.cta-inner{max-width:700px;margin:0 auto;position:relative;z-index:2;}
+.cta-tag{font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--cyan);text-transform:uppercase;margin-bottom:14px;}
+.cta-title{font-family:'Orbitron',monospace;font-size:clamp(1.4rem,3.5vw,2.8rem);font-weight:900;color:var(--white);line-height:1.12;margin-bottom:12px;}
+.cta-title .green{color:var(--green);}
+.cta-sub{font-size:.95rem;color:#94A3B8;margin-bottom:28px;line-height:1.75;}
+.cta-btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:24px;}
+.hashtags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+.ht{font-size:.72rem;color:var(--dim);font-weight:600;}
+
+/* ── APP SECTION ── */
+#app{background:var(--navy);}
+.app-wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-top:44px;}
+.app-icon-big{width:100px;border-radius:24px;box-shadow:0 16px 48px rgba(0,200,255,.3);display:block;margin-bottom:20px;transition:transform .3s;}
+.app-icon-big:hover{transform:scale(1.08) rotate(-3deg);}
+.app-feat{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.af-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);flex-shrink:0;margin-top:6px;}
+.af-text{font-size:.88rem;color:var(--silver);line-height:1.6;}
+.af-text strong{color:var(--white);}
+
+/* ── FOUNDER ── */
+#founder{background:var(--deep);}
+.founder-inner{display:grid;grid-template-columns:260px 1fr;gap:52px;align-items:start;margin-top:44px;}
+.founder-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:16px;padding:28px 22px;text-align:center;position:relative;overflow:hidden;}
+.founder-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--green));}
+.fc-avatar{font-size:3rem;margin-bottom:10px;}
+.fc-name{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:800;color:var(--white);margin-bottom:4px;}
+.fc-role{font-size:.75rem;color:var(--cyan);}
+.fc-co{font-size:.72rem;color:var(--silver);margin-top:2px;}
+.fc-logo{height:32px;margin:12px auto 0;display:block;border-radius:5px;}
+.fc-contacts{display:flex;flex-direction:column;gap:6px;margin-top:14px;}
+.fci{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--silver);}
+
+.founder-text .fq{border-left:3px solid var(--yellow);padding:14px 18px;background:rgba(255,214,0,.05);border-radius:0 10px 10px 0;font-style:italic;font-size:.95rem;color:#CBD5E1;line-height:1.8;margin-bottom:16px;}
+.founder-text p{font-size:.86rem;color:var(--silver);line-height:1.8;margin-bottom:12px;}
+
+/* ── FOOTER ── */
+footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 20px;color:#1A3A4E;}
+.footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:38px;padding-bottom:28px;border-bottom:1px solid var(--border);}
+.footer-logo img{height:36px;margin-bottom:10px;}
+.footer-about{font-size:.78rem;line-height:1.75;color:#243A4E;}
+.footer-title{font-size:.73rem;font-weight:800;color:var(--silver);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.footer-links a{color:#1A3A4E;text-decoration:none;font-size:.76rem;transition:color .2s;}
+.footer-links a:hover{color:var(--cyan);}
+.footer-bottom{max-width:1100px;margin:14px auto 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.7rem;color:#0E2030;}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(20px);transition:all .65s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .hero-inner,.compare-grid,.shift-grid,.egk-grid,.app-wrap,.founder-inner,.footer-inner{grid-template-columns:1fr;}
+  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr 1fr;}
+  nav{padding:10px 16px;}
+  .nav-links{display:none;}
+  #smr-canvas-wrap{margin-top:30px;}
+}
+@media(max-width:540px){
+  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <img src="https://egkhor.com.my/home/wp-content/uploads/2026/02/cropped-IMG_7598.png" alt="EGK">
+    <span class="nav-brand-text">EGK · Nuclear AI</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#ai-shift">AI Shift</a></li>
+    <li><a href="#malaysia">Malaysia</a></li>
+    <li><a href="#egk">EGK Models</a></li>
+    <li><a href="#app">App</a></li>
+    <li><a href="#founder">About</a></li>
+    <li><a href="https://github.com/egkhor/nuclear-ai-models" target="_blank" class="nav-cta">⚛️ GitHub Models</a></li>
+  </ul>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-inner container">
+    <div>
+      <div class="hero-eyebrow"><span class="pulse-dot"></span>Energy Strategy · Malaysia 2025</div>
+      <h1 class="hero-title">
+        From <span class="cyan">12 Years</span><br>
+        to <span class="green">5 Years.</span><br>
+        AI Changes Nuclear.
+      </h1>
+      <p class="hero-sub">Malaysia can't afford to wait. Energy uncertainty demands faster, smarter decisions.</p>
+      <p class="hero-desc">Small Modular Reactors once required 7–12 years to deploy. AI-powered simulation is compressing timelines from years to months. The question is no longer <em>"Can we build nuclear fast?"</em> — it's <strong style="color:var(--white)">"Can we decide before the crisis arrives?"</strong></p>
+      <div class="hero-btns">
+        <a href="#timeline" class="btn btn-cyan">⚛️ The Timeline Shift</a>
+        <a href="https://github.com/egkhor/nuclear-ai-models" target="_blank" class="btn btn-green">💻 AI Models on GitHub</a>
+        <a href="#app" class="btn btn-ghost">📱 NuclearPower AR App</a>
+      </div>
+      <div class="hero-tags">
+        <span class="htag">⚛️ SMR Technology</span>
+        <span class="htag">🤖 AI-Accelerated Design</span>
+        <span class="htag">🇲🇾 Malaysia Energy</span>
+        <span class="htag">40–50% Faster Deployment</span>
+        <span class="htag">GE Hitachi · Westinghouse</span>
+      </div>
+    </div>
+    <!-- SMR Animation -->
+    <div id="smr-canvas-wrap">
+      <canvas id="smr-canvas" width="460" height="460"></canvas>
+      <div class="smr-label">⚛️ Small Modular Reactor — Live Anatomy</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip" style="position:relative;z-index:2;">
+  <div class="stats-inner">
+    <div class="sstat"><span class="sstat-n">7–12yr</span><span class="sstat-l">Old SMR Timeline</span></div>
+    <div class="sstat"><span class="sstat-n">5–7yr</span><span class="sstat-l">AI-Accelerated</span></div>
+    <div class="sstat"><span class="sstat-n">40–50%</span><span class="sstat-l">Faster to First Power</span></div>
+    <div class="sstat"><span class="sstat-n">Months</span><span class="sstat-l">AI Simulation Phase</span></div>
+    <div class="sstat"><span class="sstat-n">0</span><span class="sstat-l">Excuses Left</span></div>
+  </div>
+</div>
+
+<!-- ══ TIMELINE ══ -->
+<section id="timeline">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-label">The Shift</div>
+      <h2 class="sec-title">Old Way vs. <span>AI-Accelerated</span> Way</h2>
+      <p class="sec-desc" style="margin:0 auto;">AI does not remove nuclear complexity. But it removes time inefficiency — the single biggest barrier to deployment.</p>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-card old-way reveal">
+        <span class="ccard-badge badge-old">THE OLD WAY</span>
+        <div class="ccard-title">Traditional SMR Development</div>
+        <div class="timeline-steps">
+          <div class="ts"><div class="ts-label">Design & Planning</div><div class="ts-val ts-old">5–7 YRS</div></div>
+          <div class="ts"><div class="ts-label">Regulatory</div><div class="ts-val ts-old">3–5 YRS</div></div>
+          <div class="ts"><div class="ts-label">Construction</div><div class="ts-val ts-old">5–8 YRS</div></div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-fill pb-old"></div></div>
+        <div class="ccard-total total-old">TOTAL: 7 – 12 YEARS</div>
+      </div>
+      <div class="compare-card new-way reveal">
+        <span class="ccard-badge badge-new">THE NEW WAY</span>
+        <div class="ccard-title">AI-Powered SMR Development</div>
+        <div class="timeline-steps">
+          <div class="ts"><div class="ts-label">AI Simulation & Digital Twin</div><div class="ts-val ts-new green">MONTHS</div></div>
+          <div class="ts"><div class="ts-label">Smart Regulatory</div><div class="ts-val ts-new">2–3 YRS</div></div>
+          <div class="ts"><div class="ts-label">Modular Construction</div><div class="ts-val ts-new">3–5 YRS</div></div>
+          <div class="ts"><div class="ts-label">Advantage</div><div class="ts-val ts-new big">40–50%</div></div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-fill pb-new"></div></div>
+        <div class="ccard-total total-new">TOTAL: 5 – 7 YEARS</div>
+        <div style="text-align:center;margin-top:8px;"><span class="saving">40–50% Faster to First Power</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4 PILLARS ══ -->
+<section id="pillars">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-label">Why It Matters for Malaysia</div>
+      <h2 class="sec-title">Four <span class="green">Strategic Imperatives</span></h2>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar reveal">
+        <div class="pillar-icon">⚡</div>
+        <div class="pillar-title">Energy Security Can't Wait</div>
+        <div class="pillar-body">The crisis timeline is uncertain. The direction is clear: fuel volatility, electrification surge, grid instability.</div>
+        <span class="pillar-accent">Speed is our advantage.</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-icon">🤖</div>
+        <div class="pillar-title">AI Reduces Risk & Accelerates Approval</div>
+        <div class="pillar-body">Smarter simulation means better safety validation, more predictable regulatory submissions, less engineering uncertainty.</div>
+        <span class="pillar-accent">Faster, safer decisions.</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-icon">📍</div>
+        <div class="pillar-title">Deploy Small. Deploy Fast. Deploy Wide.</div>
+        <div class="pillar-body">SMRs are modular — build multiple units across states in parallel for a resilient, distributed grid.</div>
+        <span class="pillar-accent">For a resilient grid.</span>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-icon">🌿</div>
+        <div class="pillar-title">Clean Baseload That Lasts</div>
+        <div class="pillar-body">Nuclear provides stable, zero-emission baseload power — the backbone that solar and wind alone cannot provide.</div>
+        <span class="pillar-accent">Zero-emission power.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ AI SHIFT ══ -->
+<section id="ai-shift">
+  <div class="container">
+    <div class="shift-grid">
+      <div class="reveal">
+        <div class="sec-label">The Inflection Point</div>
+        <h2 class="sec-title">AI Has Removed<br>the <span>Time Excuse</span></h2>
+        <p class="sec-desc">Artificial Intelligence is fundamentally reshaping how nuclear systems are designed and validated. What once required years of simulation, safety modeling, and engineering iteration can now be compressed into months.</p>
+        <div class="arrows-list">
+          <div class="arrow-item"><span class="arrow-sym">→</span><span class="arrow-text">Faster design convergence</span></div>
+          <div class="arrow-item"><span class="arrow-sym">→</span><span class="arrow-text">More robust safety validation</span></div>
+          <div class="arrow-item"><span class="arrow-sym">→</span><span class="arrow-text">Reduced engineering uncertainty</span></div>
+          <div class="arrow-item"><span class="arrow-sym">→</span><span class="arrow-text">More predictable regulatory submissions</span></div>
+        </div>
+        <div class="industry-used">
+          <div class="iu-label">Already Applied By</div>
+          <div class="iu-item"><span class="iu-dot"></span><span class="iu-name">GE Hitachi Nuclear Energy</span></div>
+          <div class="iu-item"><span class="iu-dot"></span><span class="iu-name">Westinghouse Electric Company</span></div>
+        </div>
+      </div>
+      <div class="shift-visual reveal">
+        <div class="sv-ring svr1"></div>
+        <div class="sv-ring svr2"></div>
+        <div class="sv-ring svr3"></div>
+        <div class="sv-core">
+          Nuclear is no longer<br>a <span>"slow option."</span><br><br>
+          It is becoming a<br><strong style="color:var(--green)">deployable strategic lever.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MALAYSIA ══ -->
+<section id="malaysia">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-label">The Strategic Question</div>
+      <h2 class="sec-title">Malaysia Must <span class="green">Move with Urgency</span></h2>
+      <p class="sec-desc" style="margin:0 auto;">Energy crises do not announce themselves. They build quietly — and hit suddenly. Waiting is no longer neutral. It is a risk.</p>
+    </div>
+    <div class="malaysia-grid">
+      <div class="my-card reveal">
+        <div class="my-icon">🔥</div>
+        <div class="my-title">Fuel Volatility</div>
+        <div class="my-body">Global fuel markets remain structurally unstable. Energy import dependency creates economic and national security exposure.</div>
+        <span class="my-accent">The risk is already here.</span>
+      </div>
+      <div class="my-card reveal">
+        <div class="my-icon">⚡</div>
+        <div class="my-title">Electrification Demand Surge</div>
+        <div class="my-body">EV adoption, data centres, AI infrastructure — Malaysia's electricity demand is accelerating faster than generation capacity.</div>
+        <span class="my-accent">Supply will not keep up.</span>
+      </div>
+      <div class="my-card reveal">
+        <div class="my-icon">🌐</div>
+        <div class="my-title">Grid Instability Risks</div>
+        <div class="my-body">Intermittent renewables without stable baseload create frequency instability. SMRs provide the anchor the grid needs.</div>
+        <span class="my-accent">Baseload cannot be intermittent.</span>
+      </div>
+      <div class="my-card reveal">
+        <div class="my-icon">🏆</div>
+        <div class="my-title">Early Mover Advantage</div>
+        <div class="my-body">Countries that commit early capture the talent pipeline, supply chain relationships, and regulatory expertise that late movers will scramble for.</div>
+        <span class="my-accent">The window will not stay open.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EGK PERSPECTIVE ══ -->
+<section id="egk">
+  <div class="container">
+    <div class="egk-grid">
+      <div class="reveal">
+        <div class="sec-label">EGK Perspective</div>
+        <h2 class="sec-title">From Analysis<br>to <span>Execution</span></h2>
+        <blockquote class="egk-text">
+          <div class="egk-text">
+            <blockquote>"At EGK, we don't just analyze trends. We build. Over the past months, we have developed AI/ML nuclear modeling frameworks and formally submitted them for consideration to Malaysia's atomic ecosystem."</blockquote>
+          </div>
+        </blockquote>
+        <p>EGK's nuclear AI models are publicly available and aligned with global direction — AI-assisted simulation, predictive system modeling, and nuclear optimization workflows.</p>
+        <div class="github-card">
+          <span class="gh-icon">💻</span>
+          <div class="gh-text">
+            <strong>EGK Nuclear AI Models</strong>
+            <a href="https://github.com/egkhor/nuclear-ai-models" target="_blank">github.com/egkhor/nuclear-ai-models →</a>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="sec-label">The Models Cover</div>
+        <div class="model-list">
+          <div class="ml-item"><span class="ml-num">01</span><div class="ml-text"><strong>AI-Assisted Simulation</strong> — Compress years of engineering iteration into weeks through digital twin environments.</div></div>
+          <div class="ml-item"><span class="ml-num">02</span><div class="ml-text"><strong>Predictive System Modeling</strong> — ML models that predict system behavior, failure modes, and optimization pathways.</div></div>
+          <div class="ml-item"><span class="ml-num">03</span><div class="ml-text"><strong>Nuclear Optimization Workflows</strong> — End-to-end frameworks for design, validation, and operational efficiency.</div></div>
+          <div class="ml-item"><span class="ml-num">04</span><div class="ml-text"><strong>Regulatory Submission Support</strong> — AI-generated documentation and evidence packs aligned with nuclear safety standards.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PLAYBOOK ══ -->
+<section id="playbook">
+  <div class="container">
+    <div class="text-center reveal">
+      <div class="sec-label">The New Playbook</div>
+      <h2 class="sec-title">Four Steps to <span class="green">Deploy Nuclear Fast</span></h2>
+    </div>
+    <div class="play-steps">
+      <div class="ps reveal" data-n="1"><span class="ps-n">01</span><div class="ps-title">Adopt Proven SMR Technologies</div><div class="ps-body">No reinvention. Use battle-tested SMR designs from GE Hitachi, Westinghouse. Let AI accelerate validation, not starting from zero.</div></div>
+      <div class="ps reveal" data-n="2"><span class="ps-n">02</span><div class="ps-title">Integrate AI into Design & Validation</div><div class="ps-body">Deploy AI simulation and digital twin workflows across design, safety modeling, and regulatory submissions from Day 1.</div></div>
+      <div class="ps reveal" data-n="3"><span class="ps-n">03</span><div class="ps-title">Deploy Modular Units Across States</div><div class="ps-body">Build multiple SMRs at different sites simultaneously — distributed energy security, not centralized dependency.</div></div>
+      <div class="ps reveal" data-n="4"><span class="ps-n">04</span><div class="ps-title">Execute in Parallel, Not Sequentially</div><div class="ps-body">Run design, regulatory, and site preparation concurrently. Sequential is the old model. Parallel execution is how you hit 5–7 years.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ APP ══ -->
+<section id="app">
+  <div class="container">
+    <div class="app-wrap">
+      <div class="reveal">
+        <div class="sec-label">EGK NuclearPower AR App</div>
+        <h2 class="sec-title">Experience Nuclear<br><span>in Augmented Reality</span></h2>
+        <p class="sec-desc" style="margin-bottom:20px;">The EGK NuclearPower AR app brings nuclear power plant anatomy, SMR design, and reactor physics to life in 3D — point your phone at any surface and explore the future of energy.</p>
+        <div class="app-feat"><div class="af-dot"></div><div class="af-text"><strong>SMR Anatomy in 3D AR</strong> — Interactive reactor cross-sections, coolant loops, and steam turbines.</div></div>
+        <div class="app-feat"><div class="af-dot"></div><div class="af-text"><strong>Nuclear Physics Visualized</strong> — Fission chain reactions, neutron moderation, and fuel rods in immersive AR.</div></div>
+        <div class="app-feat"><div class="af-dot"></div><div class="af-text"><strong>Safety Systems Explained</strong> — Passive cooling, containment structures, and emergency protocols.</div></div>
+        <div class="app-feat"><div class="af-dot"></div><div class="af-text"><strong>KSSR/KSSM Curriculum Aligned</strong> — Suitable for Form 4–5 Physics and beyond.</div></div>
+        <div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;">
+          <a href="https://apps.apple.com/my/app/egk-nuclearpower-ar/id6749192880" target="_blank" class="btn btn-cyan">🍎 iOS App Store</a>
+          <a href="https://buy.stripe.com/8x26oGgQ97hb3Iz5QV6Zy0c" target="_blank" class="btn btn-green">🤖 Android</a>
+        </div>
+      </div>
+      <div class="reveal" style="text-align:center;">
+        <img class="app-icon-big" src="https://egkhor.com.my/home/wp-content/uploads/2025/12/EGKNuclearPowerAR.jpeg" alt="EGK NuclearPower AR">
+        <div style="background:rgba(0,200,255,.06);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:16px;">
+          <div style="font-family:'Orbitron',monospace;font-size:.7rem;font-weight:700;color:var(--cyan);margin-bottom:10px;">PART OF THE EGK AR UNIVERSE</div>
+          <div style="font-size:.8rem;color:var(--silver);line-height:1.7;">One of 40+ EGK AR educational apps covering nuclear power, solar energy, space stations, human biology, AI, and more — all aligned with Malaysian KSSR/KSSM curriculum.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ══ -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <div class="cta-tag">The Decision Is Now</div>
+    <h2 class="cta-title">AI has removed the excuse.<br><span class="green">Malaysia must move with urgency.</span></h2>
+    <p class="cta-sub">Don't plan for the last crisis.<br>Build the system that prevents the next one.</p>
+    <div class="cta-btns">
+      <a href="https://github.com/egkhor/nuclear-ai-models" target="_blank" class="btn btn-cyan">💻 Explore EGK Nuclear AI Models</a>
+      <a href="https://apps.apple.com/my/app/egk-nuclearpower-ar/id6749192880" target="_blank" class="btn btn-green">📱 Download NuclearPower AR</a>
+      <a href="mailto:sales@egkhor.com.my" class="btn btn-ghost">✉️ Contact EGK</a>
+    </div>
+    <div class="hashtags">
+      <span class="ht">#EnergySecurity</span><span class="ht">#AI</span><span class="ht">#Nuclear</span>
+      <span class="ht">#SMR</span><span class="ht">#Malaysia</span><span class="ht">#FutureReady</span><span class="ht">#EGK</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOUNDER ══ -->
+<section id="founder">
+  <div class="container">
+    <div class="founder-inner">
+      <div class="founder-card reveal">
+        <div class="fc-avatar">👨‍🔬</div>
+        <div class="fc-name">Isaac Khor Eng Gian</div>
+        <div class="fc-role">Founder, Developer & CEO</div>
+        <div class="fc-co">EGK Microelectronic Solutions Group</div>
+        <img class="fc-logo" src="https://egkhor.com.my/home/wp-content/uploads/2026/02/cropped-IMG_7598.png" alt="EGK">
+        <div class="fc-contacts">
+          <div class="fci">📍 Penang, Malaysia</div>
+          <div class="fci">📞 +604-505 9700</div>
+          <div class="fci">✉️ <a href="mailto:sales@egkhor.com.my" style="color:var(--cyan);">sales@egkhor.com.my</a></div>
+          <div class="fci">🌐 <a href="https://egkhor.com.my" target="_blank" style="color:var(--cyan);">egkhor.com.my</a></div>
+          <div class="fci">💻 <a href="https://github.com/egkhor/nuclear-ai-models" target="_blank" style="color:var(--cyan);">GitHub Models</a></div>
+        </div>
+      </div>
+      <div class="founder-text reveal">
+        <div class="sec-label">EGK's Position</div>
+        <h2 class="sec-title">Building, Not Just <span>Analyzing</span></h2>
+        <blockquote class="fq">
+          "Energy crises do not announce themselves. They build quietly — and hit suddenly. AI has removed the excuse of time. What remains is leadership and execution. Malaysia has the opportunity to move early. The window will not stay open forever."
+        </blockquote>
+        <p>EGK is a Penang-based technology company that builds across domains — from nuclear AI modeling frameworks submitted to Malaysia's atomic ecosystem, to STEM AR education books, humanitarian resilience apps, and anti-bully platforms.</p>
+        <p>The nuclear AI initiative is a natural extension of EGK's mission: apply advanced technology to solve real, urgent national problems before the crisis arrives.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><img src="https://egkhor.com.my/home/wp-content/uploads/2026/02/cropped-IMG_7598.png" alt="EGK"></div>
+      <div class="footer-about">
+        EGK Microelectronic Solutions Group Sdn. Bhd.<br>
+        Nuclear AI Strategy · SMR Modeling · Malaysia Energy Security<br>
+        AI-Accelerated Nuclear · EGK NuclearPower AR App<br><br>
+        © 2026 EGK Microelectronic Solutions Group Sdn. Bhd.
+      </div>
+    </div>
+    <div>
+      <div class="footer-title">Navigation</div>
+      <ul class="footer-links">
+        <li><a href="#timeline">⏱ Timeline Comparison</a></li>
+        <li><a href="#pillars">⚡ Why It Matters</a></li>
+        <li><a href="#ai-shift">🤖 AI Shift</a></li>
+        <li><a href="#malaysia">🇲🇾 Malaysia Strategy</a></li>
+        <li><a href="#egk">💻 EGK Models</a></li>
+        <li><a href="#playbook">📋 New Playbook</a></li>
+        <li><a href="#app">📱 NuclearPower AR App</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-title">Resources</div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/egkhor/nuclear-ai-models" target="_blank">💻 Nuclear AI Models</a></li>
+        <li><a href="https://apps.apple.com/my/app/egk-nuclearpower-ar/id6749192880" target="_blank">🍎 iOS App Store</a></li>
+        <li><a href="https://buy.stripe.com/8x26oGgQ97hb3Iz5QV6Zy0c" target="_blank">🤖 Android App</a></li>
+        <li><a href="mailto:sales@egkhor.com.my">✉️ Contact EGK</a></li>
+        <li><a href="https://egkhor.com.my" target="_blank">🌐 EGK Website</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 EGK Microelectronic Solutions Group Sdn. Bhd. · 🇲🇾 Penang, Malaysia</span>
+    <span style="color:var(--cyan);">⚛️ AI Changes Nuclear. The Decision Is Now.</span>
+  </div>
+</footer>
+
+<script>
+// ── SCROLL REVEAL ──
+const revObs=new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');revObs.unobserve(x.target);}});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+// ══ SMR ANIMATION ══
+(function(){
+  const canvas=document.getElementById('smr-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=460,H=460;
+  canvas.width=W;canvas.height=H;
+
+  let t=0;
+  const CYAN='#00C8FF',GREEN='#00FF88',YELLOW='#FFD600',
+        ORANGE='#FF8800',RED='#FF4040',WHITE='rgba(255,255,255,0.9)',
+        DIM='rgba(0,200,255,0.25)',GRID='rgba(0,200,255,0.07)';
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.015;
+
+    // Background gradient
+    const bg=ctx.createRadialGradient(W/2,H/2,40,W/2,H/2,W/2);
+    bg.addColorStop(0,'rgba(11,47,168,0.08)');
+    bg.addColorStop(1,'rgba(3,6,15,0)');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+    // === REACTOR VESSEL (center) ===
+    const rx=W/2, ry=H/2-20, rvW=90, rvH=130;
+    // outer vessel
+    ctx.save();
+    ctx.shadowBlur=20; ctx.shadowColor=CYAN;
+    ctx.strokeStyle=CYAN; ctx.lineWidth=2.5;
+    roundRect(ctx, rx-rvW/2, ry-rvH/2, rvW, rvH, 14, false, true);
+    ctx.restore();
+    // vessel fill
+    ctx.fillStyle='rgba(0,200,255,0.06)';
+    roundRect(ctx, rx-rvW/2, ry-rvH/2, rvW, rvH, 14, true, false);
+    // vessel label
+    label(ctx,'REACTOR VESSEL',rx,ry-rvH/2-10,CYAN,'.65rem');
+
+    // === FUEL RODS (inside reactor) ===
+    for(let i=0;i<5;i++){
+      const fx=rx-32+i*16;
+      const pulse=0.5+0.5*Math.sin(t*2+i*0.7);
+      ctx.save();
+      ctx.shadowBlur=12+pulse*8; ctx.shadowColor=ORANGE;
+      ctx.fillStyle=`rgba(255,${100+Math.floor(80*pulse)},0,0.85)`;
+      ctx.beginPath(); ctx.roundRect(fx-4,ry-rvH/2+18,8,80,3); ctx.fill();
+      ctx.restore();
+    }
+    label(ctx,'FUEL RODS',rx,ry+rvH/2-20,ORANGE,'.62rem');
+
+    // === CONTROL RODS ===
+    for(let i=0;i<4;i++){
+      const cx2=rx-24+i*16;
+      const drop=20+15*Math.sin(t*0.4+i); // slowly moving
+      ctx.strokeStyle='rgba(148,163,184,0.6)'; ctx.lineWidth=5;
+      ctx.beginPath(); ctx.moveTo(cx2,ry-rvH/2); ctx.lineTo(cx2,ry-rvH/2+drop); ctx.stroke();
+    }
+    label(ctx,'CONTROL RODS',rx,ry-rvH/2+16,'#94A3B8','.62rem');
+
+    // === PRIMARY COOLANT LOOP (left) ===
+    const pumpX=rx-160, pumpY=ry;
+    drawPump(ctx,pumpX,pumpY,CYAN,t);
+    label(ctx,'PRIMARY PUMP',pumpX,pumpY+38,CYAN,'.6rem');
+
+    // pipe reactor→pump (top)
+    animatedPipe(ctx,
+      rx-rvW/2, ry-rvH/4,
+      pumpX+30, pumpY-20,
+      CYAN, t, true);
+    // pipe pump→reactor (bottom)
+    animatedPipe(ctx,
+      pumpX+30, pumpY+20,
+      rx-rvW/2, ry+rvH/4,
+      'rgba(0,200,255,0.4)', t+1, false);
+
+    // === STEAM GENERATOR (right side) ===
+    const sgX=rx+145, sgY=ry-20;
+    drawSteamGen(ctx,sgX,sgY,GREEN,t);
+    label(ctx,'STEAM GEN',sgX,sgY+60,GREEN,'.6rem');
+
+    // pipe reactor→steam gen
+    animatedPipe(ctx,
+      rx+rvW/2, ry-rvH/4,
+      sgX-28, sgY-20,
+      GREEN, t+0.5, true);
+    animatedPipe(ctx,
+      sgX-28, sgY+20,
+      rx+rvW/2, ry+rvH/4,
+      'rgba(0,229,176,0.35)', t+1.5, false);
+
+    // === TURBINE (bottom right) ===
+    const turbX=rx+145, turbY=ry+140;
+    drawTurbine(ctx,turbX,turbY,YELLOW,t);
+    label(ctx,'TURBINE',turbX,turbY+38,YELLOW,'.6rem');
+
+    // steam pipe SG→Turbine
+    animatedPipe(ctx,sgX,sgY+55,turbX,turbY-30,YELLOW,t+2,true);
+
+    // === CONDENSER (bottom) ===
+    const condX=rx, condY=ry+155;
+    drawCondenser(ctx,condX,condY,t);
+    label(ctx,'CONDENSER',condX,condY+24,'#60A5FA','.6rem');
+    animatedPipe(ctx,turbX-28,turbY+28,condX+38,condY,'#60A5FA',t+1,true);
+    animatedPipe(ctx,condX-38,condY,turbX-70,turbY+10,'rgba(96,165,250,0.35)',t+2,false);
+
+    // === CONTAINMENT DOME ===
+    ctx.save();
+    ctx.shadowBlur=6; ctx.shadowColor='rgba(0,200,255,0.2)';
+    ctx.strokeStyle='rgba(0,200,255,0.2)'; ctx.lineWidth=1.5; ctx.setLineDash([5,8]);
+    ctx.beginPath();
+    ctx.ellipse(rx,ry-10,120,145,0,0,Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+    ctx.setLineDash([]);
+    label(ctx,'CONTAINMENT',rx,ry-rvH/2-30,'rgba(0,200,255,0.4)','.58rem');
+
+    // === GRID BASELINE ===
+    const gbY=ry+195;
+    ctx.strokeStyle='rgba(255,214,0,0.6)'; ctx.lineWidth=3;
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(80,gbY); ctx.lineTo(380,gbY); ctx.stroke();
+    // power arrows from turbine to grid
+    for(let i=0;i<3;i++){
+      const ax=200+i*50;
+      const aPulse=0.3+0.7*Math.abs(Math.sin(t*1.5+i*0.9));
+      ctx.strokeStyle=`rgba(255,214,0,${aPulse})`; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(ax,turbY+30); ctx.lineTo(ax,gbY);
+      ctx.stroke();
+      // arrowhead
+      ctx.fillStyle=`rgba(255,214,0,${aPulse})`;
+      ctx.beginPath();
+      ctx.moveTo(ax,gbY); ctx.lineTo(ax-5,gbY-10); ctx.lineTo(ax+5,gbY-10);
+      ctx.closePath(); ctx.fill();
+    }
+    label(ctx,'⚡ ELECTRICITY TO GRID',rx,gbY+16,YELLOW,'.64rem');
+
+    // === TITLE ===
+    ctx.font='bold .6rem Orbitron,monospace';
+    ctx.fillStyle='rgba(0,200,255,0.5)';
+    ctx.textAlign='center';
+    ctx.fillText('SMR — SMALL MODULAR REACTOR',W/2,22);
+
+    requestAnimationFrame(draw);
+  }
+
+  // ── HELPERS ──
+  function roundRect(ctx,x,y,w,h,r,fill,stroke){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+    ctx.closePath();
+    if(fill)ctx.fill();
+    if(stroke)ctx.stroke();
+  }
+
+  function label(ctx,text,x,y,color,size){
+    ctx.save();
+    ctx.font=`700 ${size} Orbitron,monospace`;
+    ctx.fillStyle=color;
+    ctx.textAlign='center';
+    ctx.fillText(text,x,y);
+    ctx.restore();
+  }
+
+  function animatedPipe(ctx,x1,y1,x2,y2,color,phase,forward){
+    // pipe
+    ctx.strokeStyle=color; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    // flowing dots
+    for(let i=0;i<4;i++){
+      let p=((phase*0.6+i*0.25)%1);
+      if(!forward)p=1-p;
+      const dx=x1+(x2-x1)*p, dy=y1+(y2-y1)*p;
+      ctx.save();
+      ctx.shadowBlur=8; ctx.shadowColor=color;
+      ctx.fillStyle=color;
+      ctx.beginPath(); ctx.arc(dx,dy,3,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawPump(ctx,x,y,color,t){
+    ctx.save();
+    ctx.translate(x,y);
+    // body
+    ctx.shadowBlur=12; ctx.shadowColor=color;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(0,0,22,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='rgba(0,200,255,0.06)';
+    ctx.beginPath(); ctx.arc(0,0,22,0,Math.PI*2); ctx.fill();
+    // spinning impeller
+    ctx.strokeStyle=color; ctx.lineWidth=1.5;
+    for(let i=0;i<4;i++){
+      const a=t*2+i*Math.PI/2;
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.lineTo(Math.cos(a)*14,Math.sin(a)*14);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawSteamGen(ctx,x,y,color,t){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.shadowBlur=12; ctx.shadowColor=color;
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(-22,-50,44,90,8); ctx.stroke();
+    ctx.fillStyle='rgba(0,255,136,0.05)';
+    ctx.beginPath(); ctx.roundRect(-22,-50,44,90,8); ctx.fill();
+    // wavy lines inside
+    for(let j=0;j<4;j++){
+      ctx.strokeStyle=`rgba(0,255,136,0.3)`;
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let xi=-16;xi<=16;xi+=2){
+        const yi=-34+j*18+3*Math.sin((xi+t*20)*0.4);
+        xi===-16?ctx.moveTo(xi,yi):ctx.lineTo(xi,yi);
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawTurbine(ctx,x,y,color,t){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.shadowBlur=14; ctx.shadowColor=color;
+    // body
+    ctx.strokeStyle=color; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(-24,-24,48,24,4); ctx.stroke();
+    // spinning blades
+    ctx.save(); ctx.rotate(t*3);
+    ctx.strokeStyle=color; ctx.lineWidth=1.5;
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3;
+      ctx.beginPath();
+      ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*16,Math.sin(a)*16);
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function drawCondenser(ctx,x,y,t){
+    ctx.save(); ctx.translate(x,y);
+    ctx.strokeStyle='#60A5FA'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(-40,-18,80,18,6); ctx.stroke();
+    ctx.fillStyle='rgba(96,165,250,0.05)';
+    ctx.beginPath(); ctx.roundRect(-40,-18,80,18,6); ctx.fill();
+    // cooling ripples
+    const p=0.5+0.5*Math.sin(t*2);
+    ctx.strokeStyle=`rgba(96,165,250,${0.2+0.2*p})`; ctx.lineWidth=1;
+    for(let i=0;i<3;i++){
+      ctx.beginPath(); ctx.arc(0,0,(8+i*12)*(0.7+0.3*Math.sin(t+i)),0,Math.PI*2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  draw();
+})();
+</script>
+</body>
+</html>
