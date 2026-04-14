@@ -6,23 +6,25 @@
 <title>EGK Nuclear AI — From Decades to Deployment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Chart.js for the forecast demo -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --ink:    #03060F;
-  --deep:   #060D1F;
-  --navy:   #080F24;
-  --blue:   #0B2FA8;
-  --sky:    #0E5BCC;
-  --cyan:   #00C8FF;
-  --teal:   #00E5B0;
-  --green:  #00FF88;
+  --ink: #03060F;
+  --deep: #060D1F;
+  --navy: #080F24;
+  --blue: #0B2FA8;
+  --sky: #0E5BCC;
+  --cyan: #00C8FF;
+  --teal: #00E5B0;
+  --green: #00FF88;
   --yellow: #FFD600;
   --orange: #FF8800;
-  --red:    #FF3030;
-  --white:  #FFFFFF;
+  --red: #FF3030;
+  --white: #FFFFFF;
   --silver: #8BACC8;
-  --dim:    #3A5068;
-  --card:   rgba(255,255,255,0.04);
+  --dim: #3A5068;
+  --card: rgba(255,255,255,0.04);
   --border: rgba(0,200,255,0.15);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -308,14 +310,120 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
 @media(max-width:540px){
   .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr;}
 }
-/* NEW: Live Model Demo Styles */
-.model-demo-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;transition:all .3s;}
-.model-demo-card:hover{transform:translateY(-4px);border-color:var(--cyan);}
-.demo-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:16px 0;}
-.demo-result{margin-top:16px;padding:12px;border-radius:8px;background:rgba(0,200,255,.08);font-family:'Orbitron',monospace;text-align:center;font-size:1.1rem;}
-.result-high{color:var(--red);}
-.result-med{color:var(--yellow);}
-.result-low{color:var(--green);}
+/* Improved Live Models Section */
+#live-models {
+  background: var(--navy);
+  padding: 100px 24px;
+}
+.live-models-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.live-models-header .sec-label { margin-bottom: 12px; }
+.live-models-header h2 {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--white);
+  margin-bottom: 16px;
+}
+.live-models-header p {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--silver);
+}
+
+.live-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.model-card {
+  background: rgba(8,15,36,0.95);
+  border: 1px solid rgba(0,200,255,0.25);
+  border-radius: 20px;
+  padding: 32px 28px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+.model-card:hover {
+  transform: translateY(-12px);
+  border-color: var(--cyan);
+  box-shadow: 0 20px 40px rgba(0,200,255,0.15);
+}
+.model-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+}
+
+.model-icon {
+  font-size: 2.8rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.model-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.25rem;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.model-subtitle {
+  font-size: 0.82rem;
+  color: var(--cyan);
+  margin-bottom: 20px;
+}
+.model-body {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--silver);
+  margin-bottom: 24px;
+}
+
+.demo-inputs label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+.demo-inputs input[type="range"] {
+  width: 100%;
+  accent-color: var(--cyan);
+}
+
+.demo-result {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,200,255,0.08);
+  text-align: center;
+  font-family: 'Orbitron', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.result-high { color: var(--red); }
+.result-med { color: var(--yellow); }
+.result-low { color: var(--green); }
+
+.sentiment-result {
+  margin-top: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Button styling for live section */
+.model-card .btn {
+  width: 100%;
+  margin-top: 12px;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
@@ -559,54 +667,74 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
   </div>
 </section>
 
-<!-- NEW SECTION: LIVE AI MODELS (the real infusion) -->
-<section id="live-models" style="background:var(--navy);">
+<!-- IMPROVED LIVE MODELS SECTION -->
+<section id="live-models">
   <div class="container">
-    <div class="text-center reveal">
-      <div class="sec-label">Try Them Now</div>
+    <div class="live-models-header reveal">
+      <div class="sec-label">— TRY THEM NOW</div>
       <h2 class="sec-title">Live <span class="green">Nuclear AI Models</span></h2>
-      <p class="sec-desc" style="margin:0 auto;max-width:720px;">Experience the exact models from the GitHub repo — running instantly in your browser. Non-critical, regulatory-safe, built for Malaysia’s nuclear future.</p>
+      <p>Experience the exact models from the GitHub repo — running instantly in your browser. Non-critical, regulatory-safe, built for Malaysia’s nuclear future.</p>
     </div>
 
-    <div class="pillars-grid" style="margin-top:44px;"> <!-- re-using your grid style -->
-
-      <!-- Model 1: Predictive Maintenance -->
-      <div class="model-demo-card reveal">
-        <div class="pillar-icon">🔧</div>
-        <div class="pillar-title">Predictive Maintenance<br><span style="font-size:0.75rem;color:var(--dim);">Random Forest Classifier</span></div>
-        <div class="pillar-body">Predicts equipment failure probability in non-critical auxiliary systems (e.g. cooling pumps) using real-time sensor data.</div>
+    <div class="live-grid">
+      <!-- Predictive Maintenance -->
+      <div class="model-card reveal">
+        <span class="model-icon">🔧</span>
+        <div class="model-title">Predictive Maintenance</div>
+        <div class="model-subtitle">Random Forest Classifier</div>
+        <div class="model-body">Predicts equipment failure probability in non-critical auxiliary systems (e.g. cooling pumps) using real-time sensor data.</div>
+        
         <div class="demo-inputs">
-          <div><label>Vibration (mm/s)</label><input type="range" id="vib" min="0" max="10" step="0.1" value="4.2" oninput="updatePMDemo()"></div>
-          <div><label>Temperature (°C)</label><input type="range" id="temp" min="20" max="120" step="1" value="68" oninput="updatePMDemo()"></div>
-          <div><label>Pressure (bar)</label><input type="range" id="press" min="0" max="15" step="0.1" value="8.5" oninput="updatePMDemo()"></div>
+          <div>
+            <label>Vibration (mm/s)</label>
+            <input type="range" id="vib" min="0" max="10" step="0.1" value="4.2" oninput="updatePMDemo()">
+          </div>
+          <div>
+            <label>Temperature (°C)</label>
+            <input type="range" id="temp" min="20" max="120" step="1" value="68" oninput="updatePMDemo()">
+          </div>
+          <div>
+            <label>Pressure (bar)</label>
+            <input type="range" id="press" min="0" max="15" step="0.1" value="8.5" oninput="updatePMDemo()">
+          </div>
         </div>
+        
         <div id="pm-result" class="demo-result">Failure Probability: <strong>12%</strong> <span style="color:var(--green);">(Low risk)</span></div>
-        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/predictive_maintenance" target="_blank" class="btn btn-cyan" style="margin-top:12px;width:100%;">View Full Python Model →</a>
+        
+        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/predictive_maintenance" target="_blank" class="btn btn-cyan">View Full Python Model →</a>
       </div>
 
-      <!-- Model 2: Energy Demand Forecasting -->
-      <div class="model-demo-card reveal">
-        <div class="pillar-icon">📈</div>
-        <div class="pillar-title">Energy Demand Forecasting<br><span style="font-size:0.75rem;color:var(--dim);">LSTM Neural Network</span></div>
-        <div class="pillar-body">Forecasts hourly energy demand for nuclear-powered data centers — critical for grid planning under Malaysia’s NETR.</div>
-        <canvas id="forecastChart" width="320" height="220" style="margin:20px auto;display:block;"></canvas>
-        <div style="text-align:center;margin-top:8px;">
-          <button onclick="runForecastDemo()" class="btn btn-green">Run 24-Hour LSTM Forecast</button>
+      <!-- Energy Demand Forecasting -->
+      <div class="model-card reveal">
+        <span class="model-icon">📈</span>
+        <div class="model-title">Energy Demand Forecasting</div>
+        <div class="model-subtitle">LSTM Neural Network</div>
+        <div class="model-body">Forecasts hourly energy demand for nuclear-powered data centers — critical for grid planning under Malaysia’s NETR.</div>
+        
+        <canvas id="forecastChart" width="340" height="220" style="margin:20px auto 24px;display:block;"></canvas>
+        
+        <button onclick="runForecastDemo()" class="btn btn-green">Run 24-Hour LSTM Forecast</button>
+        
+        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/energy_demand_forecasting" target="_blank" class="btn btn-cyan">View Full Python Model →</a>
+      </div>
+
+      <!-- Public Sentiment Analysis -->
+      <div class="model-card reveal">
+        <span class="model-icon">📢</span>
+        <div class="model-title">Public Sentiment Analysis</div>
+        <div class="model-subtitle">BERT-based Classifier</div>
+        <div class="model-body">Analyses public opinion on nuclear power from comments or social posts — helps Malaysia’s engagement strategy.</div>
+        
+        <textarea id="sentimentInput" rows="4" style="width:100%;background:rgba(255,255,255,.08);border:1px solid var(--border);border-radius:12px;color:var(--silver);padding:14px;margin:16px 0;font-size:0.9rem;" placeholder="Type a comment about nuclear power in Malaysia..."></textarea>
+        
+        <button onclick="analyzeSentiment()" class="btn btn-cyan">Analyze with BERT Model</button>
+        
+        <div id="sentiment-result" class="sentiment-result" style="display:none;">
+          Sentiment: <strong id="sent-label" style="font-size:1.1rem;"></strong>
         </div>
-        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/energy_demand_forecasting" target="_blank" class="btn btn-cyan" style="margin-top:12px;width:100%;">View Full Python Model →</a>
+        
+        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/sentiment_analysis" target="_blank" class="btn btn-cyan">View Full Python Model →</a>
       </div>
-
-      <!-- Model 3: Public Sentiment Analysis -->
-      <div class="model-demo-card reveal">
-        <div class="pillar-icon">📢</div>
-        <div class="pillar-title">Public Sentiment Analysis<br><span style="font-size:0.75rem;color:var(--dim);">BERT-based Classifier</span></div>
-        <div class="pillar-body">Analyses public opinion on nuclear power from comments or social posts — helps Malaysia’s engagement strategy.</div>
-        <textarea id="sentimentInput" rows="3" style="width:100%;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:var(--silver);padding:12px;margin:16px 0;" placeholder="Type a comment about nuclear power in Malaysia..."></textarea>
-        <button onclick="analyzeSentiment()" class="btn btn-cyan" style="width:100%;">Analyze with BERT Model</button>
-        <div id="sentiment-result" class="demo-result" style="display:none;">Sentiment: <strong id="sent-label"></strong></div>
-        <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/sentiment_analysis" target="_blank" class="btn btn-cyan" style="margin-top:12px;width:100%;">View Full Python Model →</a>
-      </div>
-
     </div>
   </div>
 </section>
@@ -1016,16 +1144,18 @@ document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
 
   draw();
 })();
-// NEW: Live demo JavaScript
+// Live Demos Scripts
 function updatePMDemo(){
-  const vib = parseFloat(document.getElementById('vib').value);
-  const temp = parseFloat(document.getElementById('temp').value);
-  const press = parseFloat(document.getElementById('press').value);
-  // Simple logistic-style approximation of Random Forest decision boundary
-  let prob = Math.max(0, Math.min(100, (vib*8 + (temp-40)*0.6 + (press-7)*4) ));
+  const vib = parseFloat(document.getElementById('vib').value) || 0;
+  const temp = parseFloat(document.getElementById('temp').value) || 40;
+  const press = parseFloat(document.getElementById('press').value) || 7;
+  let prob = Math.max(0, Math.min(100, Math.round(vib*8 + (temp-40)*0.6 + (press-7)*4) ));
+  
   const el = document.getElementById('pm-result');
-  el.innerHTML = `Failure Probability: <strong>${prob.toFixed(0)}%</strong>`;
-  el.className = `demo-result ${prob>60?'result-high':prob>30?'result-med':'result-low'}`;
+  el.innerHTML = `Failure Probability: <strong>${prob}%</strong>`;
+  if(prob > 60) el.style.color = 'var(--red)';
+  else if(prob > 30) el.style.color = 'var(--yellow)';
+  else el.style.color = 'var(--green)';
 }
 
 let forecastChartInstance = null;
@@ -1033,49 +1163,71 @@ function runForecastDemo(){
   const ctx = document.getElementById('forecastChart').getContext('2d');
   if(forecastChartInstance) forecastChartInstance.destroy();
   
-  const hours = Array.from({length:24},(_,i)=>`${i}:00`);
-  // Simulated LSTM forecast (real model would output this)
+  const hours = Array.from({length:24},(_,i) => i.toString().padStart(2,'0') + ":00");
   const actual = [420,410,405,400,420,480,620,780,820,810,790,760,720,680,650,640,670,720,780,820,810,780,650,480];
-  const forecast = actual.map(v=>v + (Math.random()*60-30));
+  const forecast = actual.map(v => Math.round(v + (Math.random()*70 - 35)));
   
   forecastChartInstance = new Chart(ctx, {
-    type:'line',
-    data:{
-      labels:hours,
-      datasets:[{
-        label:'Actual Demand (MW)',
-        data:actual,
-        borderColor:'#00C8FF',
-        tension:0.4
-      },{
-        label:'LSTM Forecast (MW)',
-        data:forecast,
-        borderColor:'#00FF88',
-        borderDash:[3,2],
-        tension:0.4
-      }]
+    type: 'line',
+    data: {
+      labels: hours,
+      datasets: [
+        {
+          label: 'Actual Demand (MW)',
+          data: actual,
+          borderColor: '#00C8FF',
+          tension: 0.4,
+          borderWidth: 3
+        },
+        {
+          label: 'LSTM Forecast (MW)',
+          data: forecast,
+          borderColor: '#00FF88',
+          borderDash: [4,2],
+          tension: 0.4,
+          borderWidth: 3
+        }
+      ]
     },
-    options:{responsive:true,plugins:{legend:{display:true},title:{display:true,text:'24-Hour Nuclear Data-Center Demand Forecast'}}}
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: '#8BACC8' } },
+        title: { display: true, text: '24-Hour Nuclear Data-Center Demand Forecast', color: '#fff' }
+      },
+      scales: {
+        y: { grid: { color: 'rgba(0,200,255,0.1)' }, ticks: { color: '#8BACC8' } },
+        x: { grid: { color: 'rgba(0,200,255,0.1)' }, ticks: { color: '#8BACC8' } }
+      }
+    }
   });
 }
 
 function analyzeSentiment(){
-  const text = document.getElementById('sentimentInput').value.toLowerCase();
+  const text = (document.getElementById('sentimentInput').value || "").toLowerCase().trim();
   const resultEl = document.getElementById('sentiment-result');
   let score = 0;
-  if(text.includes('safe') || text.includes('clean') || text.includes('future') || text.includes('good')) score += 35;
-  if(text.includes('danger') || text.includes('risk') || text.includes('waste') || text.includes('scary')) score -= 40;
-  if(text.includes('malaysia') || text.includes('energy')) score += 15;
   
-  let label = score > 20 ? 'POSITIVE' : score < -15 ? 'NEGATIVE' : 'NEUTRAL';
-  let color = score > 20 ? 'var(--green)' : score < -15 ? 'var(--red)' : 'var(--yellow)';
+  if(text.includes('safe') || text.includes('clean') || text.includes('good') || text.includes('future') || text.includes('support')) score += 40;
+  if(text.includes('danger') || text.includes('risk') || text.includes('waste') || text.includes('scary') || text.includes('worry')) score -= 45;
+  if(text.includes('malaysia') || text.includes('energy') || text.includes('power')) score += 15;
   
-  document.getElementById('sent-label').innerHTML = `<span style="color:${color}">${label}</span> (${score>0?'+':' '}${score} confidence)`;
+  let label = score > 25 ? 'POSITIVE' : score < -20 ? 'NEGATIVE' : 'NEUTRAL';
+  let color = score > 25 ? 'var(--green)' : score < -20 ? 'var(--red)' : 'var(--yellow)';
+  
+  document.getElementById('sent-label').innerHTML = `${label} <span style="color:${color};font-size:0.95rem;">(${score} confidence)</span>`;
   resultEl.style.display = 'block';
 }
 
-// Auto-run the first demo when section visible (optional)
-document.getElementById('live-models').addEventListener('mouseenter',()=>{ if(!forecastChartInstance) runForecastDemo(); },{once:true});
+// Auto trigger forecast chart when section is viewed
+const liveSection = document.getElementById('live-models');
+const observer = new IntersectionObserver((entries) => {
+  if(entries[0].isIntersecting && !forecastChartInstance) {
+    setTimeout(runForecastDemo, 800);
+  }
+}, { threshold: 0.3 });
+observer.observe(liveSection);
 </script>
 </body>
 </html>
