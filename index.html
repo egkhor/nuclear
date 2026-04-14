@@ -300,24 +300,13 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
 .reveal.visible{opacity:1;transform:translateY(0);}
 
 /* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .hero-inner,.compare-grid,.shift-grid,.egk-grid,.app-wrap,.founder-inner,.footer-inner{grid-template-columns:1fr;}
-  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr 1fr;}
-  nav{padding:10px 16px;}
-  .nav-links{display:none;}
-  #smr-canvas-wrap{margin-top:30px;}
-}
-@media(max-width:540px){
-  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr;}
-}
-/* Improved Live Models Section */
 #live-models {
   background: var(--navy);
-  padding: 100px 24px;
+  padding: 80px 24px 100px;
 }
 .live-models-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 50px;
 }
 .live-models-header .sec-label { margin-bottom: 12px; }
 .live-models-header h2 {
@@ -334,8 +323,8 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
 
 .live-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -344,13 +333,14 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
   background: rgba(8,15,36,0.95);
   border: 1px solid rgba(0,200,255,0.25);
   border-radius: 20px;
-  padding: 32px 28px;
+  padding: 28px 24px;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  height: 100%;
 }
 .model-card:hover {
-  transform: translateY(-12px);
+  transform: translateY(-8px);
   border-color: var(--cyan);
   box-shadow: 0 20px 40px rgba(0,200,255,0.15);
 }
@@ -362,27 +352,23 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
   background: linear-gradient(90deg, var(--cyan), var(--green));
 }
 
-.model-icon {
-  font-size: 2.8rem;
-  margin-bottom: 16px;
-  display: block;
-}
+.model-icon { font-size: 2.6rem; margin-bottom: 14px; display: block; }
 .model-title {
   font-family: 'Orbitron', monospace;
-  font-size: 1.25rem;
+  font-size: 1.22rem;
   color: var(--white);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .model-subtitle {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--cyan);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .model-body {
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--silver);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .demo-inputs label {
@@ -397,18 +383,15 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
 }
 
 .demo-result {
-  margin-top: 20px;
-  padding: 16px;
+  margin: 18px 0;
+  padding: 14px;
   border-radius: 12px;
   background: rgba(0,200,255,0.08);
   text-align: center;
   font-family: 'Orbitron', monospace;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
-.result-high { color: var(--red); }
-.result-med { color: var(--yellow); }
-.result-low { color: var(--green); }
 
 .sentiment-result {
   margin-top: 16px;
@@ -418,11 +401,29 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
   text-align: center;
 }
 
-/* Button styling for live section */
-.model-card .btn {
+#forecastChart {
+  width: 100% !important;
+  height: 180px !important;   /* Reduced height to prevent long page */
+  margin: 16px 0 20px;
+}
+
+/* Button styling */
+.model-card .btn, .model-card button {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 8px;
   justify-content: center;
+}
+
+/* Your original responsive media queries */
+@media(max-width:900px){
+  .hero-inner,.compare-grid,.shift-grid,.egk-grid,.app-wrap,.founder-inner,.footer-inner{grid-template-columns:1fr;}
+  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr 1fr;}
+  nav{padding:10px 16px;}
+  .nav-links{display:none;}
+  #smr-canvas-wrap{margin-top:30px;}
+}
+@media(max-width:540px){
+  .pillars-grid,.malaysia-grid,.play-steps{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -667,7 +668,7 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
   </div>
 </section>
 
-<!-- IMPROVED LIVE MODELS SECTION -->
+<!-- IMPROVED LIVE MODELS SECTION (compact version) -->
 <section id="live-models">
   <div class="container">
     <div class="live-models-header reveal">
@@ -682,25 +683,15 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
         <span class="model-icon">🔧</span>
         <div class="model-title">Predictive Maintenance</div>
         <div class="model-subtitle">Random Forest Classifier</div>
-        <div class="model-body">Predicts equipment failure probability in non-critical auxiliary systems (e.g. cooling pumps) using real-time sensor data.</div>
+        <div class="model-body">Predicts equipment failure probability in non-critical auxiliary systems using real-time sensor data.</div>
         
         <div class="demo-inputs">
-          <div>
-            <label>Vibration (mm/s)</label>
-            <input type="range" id="vib" min="0" max="10" step="0.1" value="4.2" oninput="updatePMDemo()">
-          </div>
-          <div>
-            <label>Temperature (°C)</label>
-            <input type="range" id="temp" min="20" max="120" step="1" value="68" oninput="updatePMDemo()">
-          </div>
-          <div>
-            <label>Pressure (bar)</label>
-            <input type="range" id="press" min="0" max="15" step="0.1" value="8.5" oninput="updatePMDemo()">
-          </div>
+          <div><label>Vibration (mm/s)</label><input type="range" id="vib" min="0" max="10" step="0.1" value="4.2" oninput="updatePMDemo()"></div>
+          <div><label>Temperature (°C)</label><input type="range" id="temp" min="20" max="120" step="1" value="68" oninput="updatePMDemo()"></div>
+          <div><label>Pressure (bar)</label><input type="range" id="press" min="0" max="15" step="0.1" value="8.5" oninput="updatePMDemo()"></div>
         </div>
         
         <div id="pm-result" class="demo-result">Failure Probability: <strong>12%</strong> <span style="color:var(--green);">(Low risk)</span></div>
-        
         <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/predictive_maintenance" target="_blank" class="btn btn-cyan">View Full Python Model →</a>
       </div>
 
@@ -711,10 +702,9 @@ footer{background:#020408;border-top:1px solid var(--border);padding:44px 24px 2
         <div class="model-subtitle">LSTM Neural Network</div>
         <div class="model-body">Forecasts hourly energy demand for nuclear-powered data centers — critical for grid planning under Malaysia’s NETR.</div>
         
-        <canvas id="forecastChart" width="340" height="220" style="margin:20px auto 24px;display:block;"></canvas>
+        <canvas id="forecastChart" style="margin:16px 0 20px;"></canvas>
         
         <button onclick="runForecastDemo()" class="btn btn-green">Run 24-Hour LSTM Forecast</button>
-        
         <a href="https://github.com/egkhor/nuclear-ai-models/tree/main/energy_demand_forecasting" target="_blank" class="btn btn-cyan">View Full Python Model →</a>
       </div>
 
@@ -1172,28 +1162,15 @@ function runForecastDemo(){
     data: {
       labels: hours,
       datasets: [
-        {
-          label: 'Actual Demand (MW)',
-          data: actual,
-          borderColor: '#00C8FF',
-          tension: 0.4,
-          borderWidth: 3
-        },
-        {
-          label: 'LSTM Forecast (MW)',
-          data: forecast,
-          borderColor: '#00FF88',
-          borderDash: [4,2],
-          tension: 0.4,
-          borderWidth: 3
-        }
+        { label: 'Actual Demand (MW)', data: actual, borderColor: '#00C8FF', tension: 0.4, borderWidth: 3 },
+        { label: 'LSTM Forecast (MW)', data: forecast, borderColor: '#00FF88', borderDash: [4,2], tension: 0.4, borderWidth: 3 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: true, labels: { color: '#8BACC8' } },
+        legend: { labels: { color: '#8BACC8' } },
         title: { display: true, text: '24-Hour Nuclear Data-Center Demand Forecast', color: '#fff' }
       },
       scales: {
@@ -1208,7 +1185,6 @@ function analyzeSentiment(){
   const text = (document.getElementById('sentimentInput').value || "").toLowerCase().trim();
   const resultEl = document.getElementById('sentiment-result');
   let score = 0;
-  
   if(text.includes('safe') || text.includes('clean') || text.includes('good') || text.includes('future') || text.includes('support')) score += 40;
   if(text.includes('danger') || text.includes('risk') || text.includes('waste') || text.includes('scary') || text.includes('worry')) score -= 45;
   if(text.includes('malaysia') || text.includes('energy') || text.includes('power')) score += 15;
@@ -1220,13 +1196,13 @@ function analyzeSentiment(){
   resultEl.style.display = 'block';
 }
 
-// Auto trigger forecast chart when section is viewed
+// Auto-run forecast when section visible
 const liveSection = document.getElementById('live-models');
 const observer = new IntersectionObserver((entries) => {
   if(entries[0].isIntersecting && !forecastChartInstance) {
-    setTimeout(runForecastDemo, 800);
+    setTimeout(runForecastDemo, 600);
   }
-}, { threshold: 0.3 });
+}, { threshold: 0.4 });
 observer.observe(liveSection);
 </script>
 </body>
